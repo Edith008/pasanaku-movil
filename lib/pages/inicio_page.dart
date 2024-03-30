@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import'registrarse_page.dart';
+import 'iniciarSesion_page.dart';
 
 class InicioPage extends StatefulWidget {
   const InicioPage({super.key});
@@ -116,6 +118,7 @@ class _InicioPageState extends State<InicioPage> {
                         child: ElevatedButton(
                           onPressed: () {
                             //
+                            Navigator.push(context, MaterialPageRoute(builder: (_)=>RegistrarsePage())); 
                           },
                           style: ElevatedButton.styleFrom(
                             primary: Color.fromARGB(255, 47, 22, 159),
@@ -132,7 +135,8 @@ class _InicioPageState extends State<InicioPage> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            // 
+                            //
+                            Navigator.push(context, MaterialPageRoute(builder: (_)=>IniciarsesionPage())); 
                           },
                           style: ElevatedButton.styleFrom(
                             primary: Color.fromARGB(255, 47, 22, 159), 
