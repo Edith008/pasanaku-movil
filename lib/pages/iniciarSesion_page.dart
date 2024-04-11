@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import'registrarse_page.dart';
-
+import 'listadoJuegos_page.dart';
 
 class IniciarsesionPage extends StatefulWidget {
   const IniciarsesionPage({super.key});
@@ -93,7 +93,7 @@ class _IniciarsesionPageState extends State<IniciarsesionPage> {
                             width: double.maxFinite, 
                             child: ElevatedButton(
                               onPressed: () {
-                                // 
+                                Navigator.push(context, MaterialPageRoute(builder: (_)=>ListadoJuegosPage())); //MODIFIQUE ESTO
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Color.fromARGB(255, 47, 22, 159),
