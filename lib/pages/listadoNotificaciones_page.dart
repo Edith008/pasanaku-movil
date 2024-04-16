@@ -8,22 +8,22 @@ class ListadoNotificacionesPage extends StatefulWidget {
 }
 
 class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
-  List<dynamic> notificaciones = [];
+  List<dynamic> invitaciones = [];
 
   @override
   void initState() {
     super.initState();
-    fetchNotificacion();
+    fetchInvitacion();
   }
 
-  Future<void> fetchNotificacion() async {
-    notificaciones = await NotificacionServicio.fetchNotificacion();
+  Future<void> fetchInvitacion() async {
+    invitaciones = await InvitacionServicio.fetchInvitacion();
     setState(() {});
   }
 
   void eliminarNotificacion(int index) {
     setState(() {
-      notificaciones.removeAt(index);
+      invitaciones.removeAt(index);
     });
   }
 
@@ -36,7 +36,7 @@ class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
         iconTheme: IconThemeData(color: Color.fromARGB(255, 250, 250, 250)),
       ),
       body: ListView.builder(
-        itemCount: notificaciones.length,
+        itemCount: invitaciones.length,
         itemBuilder: (BuildContext context, int index) {
           return Container(
             margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
@@ -49,14 +49,14 @@ class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ListTile(
-                  title: Text('Hola ${notificaciones[index]['email']}'),
+                  title: Text('Hola ${invitaciones[index]['email']}'),
                 ),
                 Divider(), // Línea divisoria 
                 //Text('Creador: ${notificaciones[index]['estado']}'),
                 //Text('Monto: ${notificaciones[index]['estado']}'),
-                Text('Descripcion: ${notificaciones[index]['descripcion']}'),
-                Text('fecha de Expiracion: ${notificaciones[index]['fechaExpiracion']}'),
-                Text('Duracion: ${notificaciones[index]['estado']}'),
+                Text('Descripcion: ${invitaciones[index]['descripcion']}'),
+                Text('fecha de Expiracion: ${invitaciones[index]['fechaExpiracion']}'),
+                Text('Duracion: ${invitaciones[index]['estado']}'),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -73,7 +73,7 @@ class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
                         child: Text('ACEPTAR', style: TextStyle(color: Colors.white)),
                       ),
                     ),
-                    SizedBox(width: 8), // Espacio entre los botones
+                    SizedBox(width: 8), 
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.red,
@@ -81,10 +81,35 @@ class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
                       ),
                       child: TextButton(
                         onPressed: () {
-                          // lógica para rechazar la notificación
-                          eliminarNotificacion(index);
+                         // Aquí debería ir la lógica para mostrar el diálogo de confirmación
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text('Confirmación'),
+                                content: Text('¿Estás seguro de que quieres rechazar la invitacion?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      // Aquí debería ir la lógica para manejar la acción de rechazar la notificación
+                                      eliminarNotificacion(index);
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('Aceptar'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('Cancelar'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
                         child: Text('RECHAZAR', style: TextStyle(color: Colors.white)),
+                        
                       ),
                     ),
                   ],
