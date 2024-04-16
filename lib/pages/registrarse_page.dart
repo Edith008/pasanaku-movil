@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pasanaku_movil/pages/inicio_page.dart';
 import './servicios.dart'; 
-import'listadoJuegos_page.dart';
+import 'iniciarSesion_page.dart';
+//import'listadoJuegos_page.dart';
 
 class RegistrarsePage extends StatefulWidget {
   const RegistrarsePage({super.key});
@@ -10,7 +12,7 @@ class RegistrarsePage extends StatefulWidget {
 }
 
 class _RegistrarsePageState extends State<RegistrarsePage> {
-  final UsuarioServicio _servicioUsuario = UsuarioServicio();// Instancia de Servicios
+  final RegistroUsuarioServicio _servicioUsuario = RegistroUsuarioServicio();// Instancia de Servicios
 
   // Métodos para controlar los valores de los TextFormField
   TextEditingController _emailController = TextEditingController();
@@ -34,10 +36,10 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
   String _errorLogContrasena = '';
   String _errorLogRepetirContrasena = '';
 
+  bool _esEmailValido = false;
+  bool _esNombreValido = false;
+  bool _esTelefonoValido = false;
   bool _sonContrasenasValidas = false;
-  bool _sonTelefonosValidos = false;
-  bool _sonEmailValidos = false;
-  bool _sonNombresValidos = false;
 
   @override
   Widget build(BuildContext context) {
@@ -252,7 +254,7 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
       } else {
           _errorEmail = '';
       }
-      _sonEmailValidos = isValidEmail; 
+      _esEmailValido = isValidEmail; 
     });
   }
 
@@ -265,7 +267,7 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
       } else {
           _errorNombre = '';
       }
-      _sonNombresValidos = (nombre.isNotEmpty);
+      _esNombreValido = (nombre.isNotEmpty);
     });
   }
 
@@ -280,7 +282,7 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
       } else {
         _errorTelefono = '';
       } 
-      _sonTelefonosValidos = (telefono.length == 8); 
+      _esTelefonoValido = (telefono.length == 8); 
     });
   }
 
@@ -331,14 +333,14 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
 
   // Método para registrar usuario -------------------------------------------------------
   void _registrarUsuario() {
-  if (_sonContrasenasValidas && _sonTelefonosValidos && _sonEmailValidos && _sonNombresValidos) {
+  if (_sonContrasenasValidas && _esTelefonoValido && _esEmailValido && _esNombreValido) {
     String email = _emailController.text;
     String nombre = _nombreController.text;
     String telefono = _telefonoController.text;
     String contrasena = _contrasenaController.text;
 
     _servicioUsuario.registrarUsuario(email, nombre, telefono, contrasena).then((value) {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => ListadoJuegosPage()));
+      Navigator.push(context, MaterialPageRoute(builder: (_) => IniciarsesionPage()));
     }).catchError((error) {
       print('Error: $error');
     });
