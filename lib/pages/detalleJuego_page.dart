@@ -83,18 +83,19 @@ class DetalleJuegoPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 10), // Espacio entre los contenedores
+                SizedBox(width: 10), 
+
                 Expanded(
                   child: Container(
                     height: 300.0, // Altura fija para el contenedor
                     padding: EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200], // Puedes cambiar el color para diferenciar los contenedores
+                      color: Colors.grey[200], 
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    // Puedes agregar contenido aquí si lo deseas
+    
                    child: ListView(
-                      shrinkWrap: true, // Para asegurarse de que ListView ocupe el espacio mínimo
+                      shrinkWrap: true, 
                       children: [
                          //////
                       ]
@@ -103,18 +104,18 @@ class DetalleJuegoPage extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 10), // Espacio entre los contenedores
+            SizedBox(height: 10), 
+
                 Expanded(
                   child: Container(
-                    height: 200.0, // Altura fija para el contenedor
+                    height: 200.0, 
                     padding: EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200], // Puedes cambiar el color para diferenciar los contenedores
+                      color: Colors.grey[200], 
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    // Puedes agregar contenido aquí si lo deseas
                    child: ListView(
-                      shrinkWrap: true, // Para asegurarse de que ListView ocupe el espacio mínimo
+                      shrinkWrap: true, 
                       children: [
                               //////
                       ]

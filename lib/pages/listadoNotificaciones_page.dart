@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pasanaku_movil/pages/servicios.dart';
-import 'listadoJuegos_page.dart';
+import 'home_listadoJuegos_page.dart';
+import './servicios.dart'; 
 
 class ListadoNotificacionesPage extends StatefulWidget {
   @override
@@ -8,24 +9,50 @@ class ListadoNotificacionesPage extends StatefulWidget {
 }
 
 class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
+  //final AceptarInvitacionServicio _invitacionServicio = AceptarInvitacionServicio();// Instancia de Servicios
   List<dynamic> invitaciones = [];
+  List<dynamic> participantes = [];  /////
+  List<dynamic> juegos = [];         /////
+  List<dynamic> jugadores = [];      /////
 
   @override
   void initState() {
     super.initState();
     fetchInvitacion();
+    fetchGetParticipantes(); /////
+    fetchGames();            /////
+    fetchJugador();          /////
   }
 
   Future<void> fetchInvitacion() async {
     invitaciones = await InvitacionServicio.fetchInvitacion();
+    //Extraer el email de invitacion para realizar una comparacion con myEmail.
+    invitaciones = invitaciones.where((invitacion) => invitacion['email'] == myEmail).toList();
     setState(() {});
   }
 
+  Future<void> fetchGetParticipantes() async { /////
+    participantes = await ParticipantesGetServicio.fetchGetParticipante();
+    setState(() {});
+  }
+
+  Future<void> fetchGames() async { /////
+    juegos = await JuegoServicio.fetchGames();
+    setState(() {});
+  }
+
+  Future<void> fetchJugador() async { /////
+    jugadores = await JugadorGetServicio.fetchJugador();
+    setState(() {});
+  }
+
+  //temporalmente''''''''''''''''''''''''''
   void eliminarNotificacion(int index) {
     setState(() {
       invitaciones.removeAt(index);
     });
   }
+  //'''''''''''''''''''''''''''''''''''''''
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +65,23 @@ class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
       body: ListView.builder(
         itemCount: invitaciones.length,
         itemBuilder: (BuildContext context, int index) {
+          var invitacion = invitaciones[index];        ///
+          //var participante = participantes.where((participante) => participante['id'] == invitacion['participanteId']).first;
+          //var juego = juegos.where((juego) => juego['id'] == participante['juegoId']).first;
+
+          //var participante = participantes['id'] == invitacion['participanteId'] ? participantes : null;
+          //var juego = juego['id'] == participante['juegoId'] ? juego : null;
+
+          var participante = participantes.firstWhere((participante) => participante['id'] == invitacion['participanteId'], orElse: () => null);
+          var juego = juegos.firstWhere((juego) => juego['id'] == participante['juegoId'], orElse: () => null);
+
+          //var jugador = jugadores.firstWhere((jugador) => jugador['id'] == participante['jugadorId'], orElse: () => null);
+          var jugador;
+          if (participante != null) {
+            jugador = jugadores.firstWhere((jugador) => jugador['id'] == participante['jugadorId'], orElse: () => null);
+          }
+
+
           return Container(
             margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
             padding: EdgeInsets.all(10.0),
@@ -51,12 +95,18 @@ class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
                 ListTile(
                   title: Text('Hola ${invitaciones[index]['email']}'),
                 ),
-                Divider(), // Línea divisoria 
-                //Text('Creador: ${notificaciones[index]['estado']}'),
-                //Text('Monto: ${notificaciones[index]['estado']}'),
+                Divider(), // Línea divisoria entre el título y el contenido
                 Text('Descripcion: ${invitaciones[index]['descripcion']}'),
-                Text('fecha de Expiracion: ${invitaciones[index]['fechaExpiracion']}'),
-                Text('Duracion: ${invitaciones[index]['estado']}'),
+                if (jugador != null)
+                  Text('nombre del anfritrion del juego: ${jugador['nombre']}'),
+                if (juego != null) ...[
+                  Text('Juego: ${juego['nombreJuego']}'), 
+                  Text('Duracion: ${juego['periodoRonda']}'),
+                  Text('Cantidad de jugadores: ${juego['cantidadJugadores']}'),
+                  Text('Monto a pagar: ${juego['montoPago'].toString()} ${juego['moneda']}'),
+                ],
+
+                Text('fecha de Invitacion: ${invitaciones[index]['fechaHoraInvitacion'].toString()}'),  
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -67,8 +117,8 @@ class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
                       ),
                       child: TextButton(
                         onPressed: () {
-                          //  lógica para aceptar la notificación
-                          Navigator.push(context, MaterialPageRoute(builder: (_)=>ListadoJuegosPage())); //MODIFIQUE ESTO
+                          //lógica para aceptar la notificación
+                         _aceptar();
                         },
                         child: Text('ACEPTAR', style: TextStyle(color: Colors.white)),
                       ),
@@ -121,4 +171,11 @@ class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
       ),
     );
   }
+
+    void _aceptar() {
+    // Llama al método aceptarInvitacion del servicio
+    acepteJuego = true;
+    Navigator.push(context, MaterialPageRoute(builder: (_)=>ListadoJuegosPage()));
+  }
+
 }

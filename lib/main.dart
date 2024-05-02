@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pages/inicio_page.dart';
+import 'pages/welcome_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       routes: {
-        '/':(context) => const InicioPage(),
+        '/':(context) => const WelcomePage(),
       },
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import'registrarse_page.dart';
-import 'listadoJuegos_page.dart';
+import 'home_listadoJuegos_page.dart';
 import './servicios.dart'; 
 
 class IniciarsesionPage extends StatefulWidget {
@@ -116,7 +116,7 @@ class _IniciarsesionPageState extends State<IniciarsesionPage> {
                             width: double.maxFinite, 
                             child: ElevatedButton(
                               onPressed: () {
-                                //Navigator.push(context, MaterialPageRoute(builder: (_)=>ListadoJuegosPage())); //MODIFIQUE ESTO
+                                //Navigator.push(context, MaterialPageRoute(builder: (_)=>ListadoJuegosPage())); 
                                 _iniciarSesion();
                                 
                               },
@@ -213,7 +213,7 @@ class _IniciarsesionPageState extends State<IniciarsesionPage> {
   // Método para validar la contraseña--------------------------------------------------
   void _validarContrasena() {
     bool longitudValida = _contrasenaController.text.length >= 6;
-    String contrasena = _contrasenaController.text;
+    //String contrasena = _contrasenaController.text;
     setState(() {
       if (!longitudValida) {
         _errorContrasena = 'La contraseña debe tener mínimo 6 caracteres.';
@@ -226,27 +226,26 @@ class _IniciarsesionPageState extends State<IniciarsesionPage> {
 
   // Método para auth usuario -------------------------------------------------------
   void _iniciarSesion() {
-  if (_esEmailValido && _esContrasenaValido) {
-    String email = _emailController.text;
-    String contrasena = _contrasenaController.text;
+    if (_esEmailValido && _esContrasenaValido) {
+      String email = _emailController.text;
+      String contrasena = _contrasenaController.text;
+      myEmail = email;
 
-    _authUsuarioServicio.authUsuario(email, contrasena).then((data) {
-      if (data.containsKey('accessToken')) {
-        print('Token JWT: ${data['accessToken']}');  // Imprime el token por consola
-        //String userEmail = data['userEmail']; // Reemplaza 'userEmail' con el campo real en la respuesta del servidor
-        //sprint('Correo electrónico del usuario: $userEmail');
-        Navigator.push(context, MaterialPageRoute(builder: (_) => ListadoJuegosPage()));
-      } else {
-        print('No se recibió el token de autenticación');
-        print(data['error']);
-      }
-    }).catchError((error) {
-      print('Error: $error');
-    });
-  } else {
-    print('No se puede autenticar el usuario con los datos proporcionados');
+      _authUsuarioServicio.authUsuario(email, contrasena).then((data) {
+        if (data.containsKey('accessToken')) {
+          //print('Token JWT: ${data['accessToken']}');  // Imprime el token por consola
+          Navigator.push(context, MaterialPageRoute(builder: (_) => ListadoJuegosPage()));
+        } else {
+          print('No se recibió el token de autenticación');
+          print(data['error']);
+        }
+      }).catchError((error) {
+          print('Error: $error');
+          });
+    } else {
+      print('No se puede autenticar el usuario con los datos proporcionados');
+    }
   }
-}
 
 
 

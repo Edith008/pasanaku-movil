@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import'registrarse_page.dart';
 import 'iniciarSesion_page.dart';
 
-class InicioPage extends StatefulWidget {
-  const InicioPage({super.key});
+class WelcomePage extends StatefulWidget {
+  const WelcomePage({super.key});
 
   @override
-  State<InicioPage> createState() => _InicioPageState();
+  State<WelcomePage> createState() => _WelcomePageState();
 }
 
-class _InicioPageState extends State<InicioPage> {
+class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

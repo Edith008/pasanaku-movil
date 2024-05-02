@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pasanaku_movil/pages/inicio_page.dart';
 import './servicios.dart'; 
 import 'iniciarSesion_page.dart';
-//import'listadoJuegos_page.dart';
+
 
 class RegistrarsePage extends StatefulWidget {
   const RegistrarsePage({super.key});
@@ -81,7 +80,7 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Padding(
-                            padding: const EdgeInsets.all(5.0), // margen del logo
+                            padding: const EdgeInsets.all(5.0), 
                             child: ClipRRect(
                               
                               borderRadius: BorderRadius.circular(50), 
@@ -210,7 +209,7 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
                             width: double.maxFinite, 
                             child: ElevatedButton(
                               onPressed: () {
-                                 _registrarUsuario();       // Llama al metodo para registrar usuario
+                                 _registrarUsuario();       
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Color.fromARGB(255, 47, 22, 159),

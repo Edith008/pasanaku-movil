@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pasanaku_movil/pages/servicios.dart';
 import 'detalleJuego_page.dart'; 
 import'listadoNotificaciones_page.dart';
-import 'iniciarSesion_page.dart';
+
 
 class ListadoJuegosPage extends StatefulWidget {
 
@@ -23,10 +23,13 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
   }
 
   Future<void> fetchGames() async {
-    juegos = await JuegoServicio.fetchGames();
+    //juegos = await JuegoServicio.fetchGames();
     // Inicializar la lista de juegos filtrados con todos los juegos al principio
-    juegosFiltrados = List.from(juegos);
+    if(acepteJuego == true){
+      juegos = await JuegoServicio.fetchGames();
+      juegosFiltrados = List.from(juegos);
     setState(() {});
+    }
   }
 
   // Función para filtrar los juegos por nombre
@@ -45,7 +48,7 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Lista de Juegos", style: TextStyle(color: Colors.white)),
+        title: Text("Home: Lista de Juegos", style: TextStyle(color: Colors.white)),
         backgroundColor: Color.fromARGB(255, 9, 127, 83),
         iconTheme: IconThemeData(color: Color.fromARGB(255, 250, 250, 250)),
         actions: [
@@ -64,8 +67,7 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
             child: TextField(
               controller: _controller,
               onChanged: (value) {
-                // Filtrar los juegos cada vez que cambia el texto en el campo de búsqueda
-                filterJuegos(value);
+                filterJuegos(value);     // Filtrar los juegos cada vez que cambia el texto en el campo de búsqueda
               },
               decoration: InputDecoration(
                 hintText: 'Buscar juegos por nombre...',
