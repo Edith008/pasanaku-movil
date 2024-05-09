@@ -1,38 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:pasanaku_movil/pages/servicios.dart';
-import 'detalleJuego_page.dart'; 
-import'listadoNotificaciones_page.dart';
-
+import './servicios.dart';
+import 'detalleJuego_page.dart';
+import 'listadoNotificaciones_page.dart';
 
 class ListadoJuegosPage extends StatefulWidget {
-
   @override
   _ListadoJuegosPageState createState() => _ListadoJuegosPageState();
 }
 
 class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
-  List<dynamic> juegos = [];
-  List<dynamic> juegosFiltrados = []; // Lista de juegos filtrados
-
+  List<dynamic> juegos = [];            // Lista de juegos
+  List<dynamic> juegosFiltrados = [];   // Lista de juegos filtrados para el buscador
+  List<dynamic> participantes = [];     /////
+  List<dynamic> jugadores = [];         /////
   TextEditingController _controller = TextEditingController();
+
+  //bool esUsuarioActual = false ; 
 
   @override
   void initState() {
     super.initState();
-    fetchGames();
+    cargarDatos();
+    //esUsuarioActual = usuarioactual();
   }
 
-  Future<void> fetchGames() async {
-    //juegos = await JuegoServicio.fetchGames();
-    // Inicializar la lista de juegos filtrados con todos los juegos al principio
-    if(acepteJuego == true){
-      juegos = await JuegoServicio.fetchGames();
-      juegosFiltrados = List.from(juegos);
+  Future<void> cargarDatos() async {
+  await fetchGetParticipantes(); 
+  await fetchJugador(); 
+  await fetchGames(); 
+  }
+
+  Future<void> fetchGetParticipantes() async {   /////
+    participantes = await ParticipantesGetServicio.fetchGetParticipante();
     setState(() {});
-    }
   }
 
-  // Función para filtrar los juegos por nombre
+  Future<void> fetchJugador() async {      /////
+    jugadores = await JugadorGetServicio.fetchJugador();
+    setState(() {});
+  }
+
+  // Función para filtrar los juegos por nombre para el buscador (search)
   void filterJuegos(String query) {
     setState(() {
       juegosFiltrados.clear();
@@ -44,18 +52,60 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
     });
   }
 
+  Future<void> fetchGames() async {    //funciona 
+    juegos = await JuegoServicio.fetchGames();
+    List<dynamic> filteredGames = [];
+    Set<dynamic> addedGameIds = Set(); // Conjunto para rastrear los IDs de juegos agregados
+    for (var jugador in jugadores) {  
+     if ( myIdUsuario == jugador['usuarioId']) { 
+        for (var participante in participantes) {
+          for (var juego in juegos) {
+            if (jugador['id'] == participante['jugadorId']) {
+              if (participante['juegoId'] == juego['id']) {
+                // Verificar si el juego ya ha sido agregado usando el conjunto
+                if (!addedGameIds.contains(juego['id'])) {
+                  filteredGames.add(juego);
+                  addedGameIds.add(juego['id']); // Marcar el juego como agregado
+                  //break; 
+                }
+              }
+           }
+         }
+       }
+      } 
+    }  
+    
+    setState(() {
+    this.juegos = filteredGames; 
+    this.juegosFiltrados = List.from(filteredGames);
+    });
+  }
+
+  String  nombreUsuarioActual() {
+    for (var jugador in jugadores) {
+      if (myIdUsuario == jugador['usuarioId']) {
+        return jugador['nombre'];
+      }
+    }
+    return "";
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home: Lista de Juegos", style: TextStyle(color: Colors.white)),
+        title: Text("Hola, ${nombreUsuarioActual()}", style: TextStyle(color: Colors.white)),  //"Home: Lista de Juegos"
         backgroundColor: Color.fromARGB(255, 9, 127, 83),
         iconTheme: IconThemeData(color: Color.fromARGB(255, 250, 250, 250)),
         actions: [
           IconButton(
             icon: Icon(Icons.notifications),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => ListadoNotificacionesPage())); 
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => ListadoNotificacionesPage()));
             },
           ),
         ],
@@ -67,7 +117,8 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
             child: TextField(
               controller: _controller,
               onChanged: (value) {
-                filterJuegos(value);     // Filtrar los juegos cada vez que cambia el texto en el campo de búsqueda
+                filterJuegos(
+                    value); // Filtrar los juegos cada vez que cambia el texto en el campo de búsqueda
               },
               decoration: InputDecoration(
                 hintText: 'Buscar juegos por nombre...',
@@ -84,10 +135,16 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => DetalleJuegoPage(juego: juegosFiltrados[index]),));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              DetalleJuegoPage(juego: juegosFiltrados[index]),
+                        ));
                   },
                   child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                    margin:
+                        EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                     padding: EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
@@ -99,11 +156,13 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Estado: ${juegosFiltrados[index]['estado']}'),
-                          Text('Rondas: ${juegosFiltrados[index]['periodoRonda']}'),
+                          Text(
+                              'Rondas: ${juegosFiltrados[index]['periodoRonda']}'),
                         ],
                       ),
                       leading: CircleAvatar(
-                        child: Image.asset('assets/images/grupo.png', height: 200),
+                        child:
+                            Image.asset('assets/images/grupo.png', height: 200),
                       ),
                     ),
                   ),

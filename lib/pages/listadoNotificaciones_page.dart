@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pasanaku_movil/pages/servicios.dart';
 import 'home_listadoJuegos_page.dart';
 import './servicios.dart'; 
 
@@ -9,19 +8,23 @@ class ListadoNotificacionesPage extends StatefulWidget {
 }
 
 class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
-  //final AceptarInvitacionServicio _invitacionServicio = AceptarInvitacionServicio();// Instancia de Servicios
+  final AceptarInvitacionServicio _invitacionAceptarServicio = AceptarInvitacionServicio();// Instancia de Servicios
   List<dynamic> invitaciones = [];
-  List<dynamic> participantes = [];  /////
+  List<dynamic> participantes = [];  ///// que envia el email de invitacion
   List<dynamic> juegos = [];         /////
   List<dynamic> jugadores = [];      /////
 
   @override
   void initState() {
     super.initState();
-    fetchInvitacion();
-    fetchGetParticipantes(); /////
-    fetchGames();            /////
-    fetchJugador();          /////
+    cargarDatos();
+  }
+
+  Future<void> cargarDatos() async {
+    await fetchInvitacion();
+    await fetchGetParticipantes();  /////
+    await fetchJugador();           /////
+    await fetchGames();             /////
   }
 
   Future<void> fetchInvitacion() async {
@@ -58,7 +61,7 @@ class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Lista de Notificaciones", style: TextStyle(color: Colors.white)),
+        title: Text("Notificaciones", style: TextStyle(color: Colors.white)),
         backgroundColor: Color.fromARGB(255, 9, 127, 83),
         iconTheme: IconThemeData(color: Color.fromARGB(255, 250, 250, 250)),
       ),
@@ -66,21 +69,12 @@ class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
         itemCount: invitaciones.length,
         itemBuilder: (BuildContext context, int index) {
           var invitacion = invitaciones[index];        ///
-          //var participante = participantes.where((participante) => participante['id'] == invitacion['participanteId']).first;
-          //var juego = juegos.where((juego) => juego['id'] == participante['juegoId']).first;
-
-          //var participante = participantes['id'] == invitacion['participanteId'] ? participantes : null;
-          //var juego = juego['id'] == participante['juegoId'] ? juego : null;
-
           var participante = participantes.firstWhere((participante) => participante['id'] == invitacion['participanteId'], orElse: () => null);
           var juego = juegos.firstWhere((juego) => juego['id'] == participante['juegoId'], orElse: () => null);
-
-          //var jugador = jugadores.firstWhere((jugador) => jugador['id'] == participante['jugadorId'], orElse: () => null);
           var jugador;
           if (participante != null) {
             jugador = jugadores.firstWhere((jugador) => jugador['id'] == participante['jugadorId'], orElse: () => null);
           }
-
 
           return Container(
             margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
@@ -93,20 +87,18 @@ class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ListTile(
-                  title: Text('Hola ${invitaciones[index]['email']}'),
+                 title: Text('Invitacion al juego "${juego != null ? juego['nombreJuego'] : 'Unknown'}" ', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 Divider(), // Línea divisoria entre el título y el contenido
-                Text('Descripcion: ${invitaciones[index]['descripcion']}'),
-                if (jugador != null)
-                  Text('nombre del anfritrion del juego: ${jugador['nombre']}'),
-                if (juego != null) ...[
-                  Text('Juego: ${juego['nombreJuego']}'), 
-                  Text('Duracion: ${juego['periodoRonda']}'),
-                  Text('Cantidad de jugadores: ${juego['cantidadJugadores']}'),
-                  Text('Monto a pagar: ${juego['montoPago'].toString()} ${juego['moneda']}'),
-                ],
-
+                //Text('¡Bienvenido! ${invitaciones[index]['email']}'),
+                 if (jugador != null)
+                Text('${jugador['nombre']} te invito a unirte a su grupo de pasanku.'),
+                if (juego != null)
+                Text('que tendra un tiempo de duracion de ${juego['periodoRonda']}, con ${juego['cantidadJugadores']} paticipantes y un monto a pagar de ${juego['montoPago'].toString()} ${juego['moneda']}.'),
+                SizedBox(height: 5),
                 Text('fecha de Invitacion: ${invitaciones[index]['fechaHoraInvitacion'].toString()}'),  
+                SizedBox(height: 5),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -117,8 +109,7 @@ class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
                       ),
                       child: TextButton(
                         onPressed: () {
-                          //lógica para aceptar la notificación
-                         _aceptar();
+                         _aceptarJuego(juego['id']);  //_aceptar(jugador['id'], juego['id']);
                         },
                         child: Text('ACEPTAR', style: TextStyle(color: Colors.white)),
                       ),
@@ -159,7 +150,6 @@ class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
                           );
                         },
                         child: Text('RECHAZAR', style: TextStyle(color: Colors.white)),
-                        
                       ),
                     ),
                   ],
@@ -172,10 +162,16 @@ class _ListadoNotificacionesPageState extends State<ListadoNotificacionesPage> {
     );
   }
 
-    void _aceptar() {
-    // Llama al método aceptarInvitacion del servicio
-    acepteJuego = true;
-    Navigator.push(context, MaterialPageRoute(builder: (_)=>ListadoJuegosPage()));
-  }
+  void _aceptarJuego(int juegoId,) {
+    int estadoId= 5;     //estado habilitado
+    int rolId= 2;        //rol de jugador
+    var jugador = jugadores.firstWhere((jugador) => jugador['usuarioId'] == myIdUsuario, orElse: () => null);
+    int jugadorIdActual = jugador != null ? jugador['id'] : null; //jugadorId del usuario actual
 
+    _invitacionAceptarServicio.aceptarInvitacion(jugadorIdActual , juegoId, estadoId, rolId).then((value) {
+      Navigator.push(context, MaterialPageRoute(builder: (_)=>ListadoJuegosPage()));
+    }).catchError((error) {
+      print('Error: $error');
+    });
+  }
 }

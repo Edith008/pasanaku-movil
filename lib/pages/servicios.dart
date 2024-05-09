@@ -9,6 +9,7 @@ class ServicioBase {
 }
 
 var myEmail = '';
+var myIdUsuario = -1;
 bool acepteJuego = false;
 
 //obtener juegos----------------------------------------------------------------
@@ -30,7 +31,7 @@ class InvitacionServicio {   //para listado de notificaciones
   static Future<List<dynamic>> fetchInvitacion() async {
     final response = await http.get(Uri.parse('${ServicioBase.baseUrl}/invitaciones')); 
     if (response.statusCode == 200) {
-      debugPrint("se cargaron las invitaciones correctamente");
+      //debugPrint("se cargaron las invitaciones correctamente");
       return json.decode(response.body);
     } else {
       throw Exception('No se pudo cargar las invitaciones');
@@ -39,7 +40,7 @@ class InvitacionServicio {   //para listado de notificaciones
 }
 
 //crear usuario----------------------------------------------------------------
-class RegistroUsuarioServicio {   //para registro de usuario
+class RegistroUsuarioServicio {   //para registro de usuario y jugador
   Future<void> registrarUsuario(String email, String nombre, String telefono, String contrasena) async {
     try {
       var url = Uri.parse('${ServicioBase.baseUrl}/usuarios/crear-usuario-jugador'); 
@@ -80,12 +81,18 @@ class AuthUsuarioServicio {
           'contrasena': contrasena,
         }),
       );
-
+      
       if (response.statusCode == 201) {
         var data = jsonDecode(response.body);
-        //var token = data['accessToken'];    // Accediendo a la clave 'accessToken'
-        //print('Token JWT: $token');
+        var token = data['accessToken'];    
+        // print(token);
+        //Extraer el usuarioId del token.
+        var tokenSplit = token.split('.');
+        var payload = json.decode(utf8.decode(base64.decode(base64.normalize(tokenSplit[1]))));
+        myIdUsuario = int.parse(payload['usuarioId'].toString());
+        print('usuarioId JWT: $myIdUsuario');
         return data; // Devuelve el Map con los datos de la respuesta
+
       } else {
         return {'error': 'Error al iniciar sesión: ${response.statusCode}'};
       }
@@ -100,7 +107,7 @@ class ParticipantesGetServicio {
   static Future<List<dynamic>> fetchGetParticipante() async {
     final response = await http.get(Uri.parse('${ServicioBase.baseUrl}/participantes')); 
     if (response.statusCode == 200) {
-      debugPrint("se cargaron los paticipantes correctamente");
+      //debugPrint("se cargaron los paticipantes correctamente");
       return json.decode(response.body);
     } else {
       throw Exception('No se pudo cargar los participantes');
@@ -113,7 +120,7 @@ class JugadorGetServicio {
   static Future<List<dynamic>> fetchJugador() async {
     final response = await http.get(Uri.parse('${ServicioBase.baseUrl}/jugadores')); 
     if (response.statusCode == 200) {
-      debugPrint("se cargaron los jugadores correctamente");
+      //debugPrint("se cargaron los jugadores correctamente");
       return json.decode(response.body);
     } else {
       throw Exception('No se pudo cargar los jugadores');
@@ -121,5 +128,32 @@ class JugadorGetServicio {
   }
 }
 
+// ? crear participante----------------------------------------------------------------
+class AceptarInvitacionServicio {
+  Future<void> aceptarInvitacion(int jugadorId, int juegoId, int estadoId, int rolId) async {
+    try { 
+      var url = Uri.parse('${ServicioBase.baseUrl}/participantes'); 
+        var response = await http.post(
+          url,
+          body: {
+          'jugadorId': jugadorId.toString(),
+          'juegoId': juegoId.toString(), 
+          'estadoId': estadoId.toString(),
+          'rolId': rolId.toString(),
+          },
+        );
+
+      if (response.statusCode == 201) {
+        print('creacion de nuevo participante exitosa: ${response.statusCode}');
+        // Si la solicitud fue exitosa, actualiza la lista de invitaciones
+      // fetchInvitacion();
+      } else {
+        print('Error al crear nuevo paticipante: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+}
 
 
