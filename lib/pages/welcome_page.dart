@@ -110,7 +110,6 @@ class _WelcomePageState extends State<WelcomePage> {
                   ),
                   SizedBox(height: 80.0),
 
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly, 
                     children: [
