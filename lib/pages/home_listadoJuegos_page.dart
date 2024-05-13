@@ -13,6 +13,7 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
   List<dynamic> juegosFiltrados = [];   // Lista de juegos filtrados para el buscador
   List<dynamic> participantes = [];     /////
   List<dynamic> jugadores = [];         /////
+  List<dynamic> estados = [];      /////
   TextEditingController _controller = TextEditingController();
 
   //bool esUsuarioActual = false ; 
@@ -28,6 +29,7 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
   await fetchGetParticipantes(); 
   await fetchJugador(); 
   await fetchGames(); 
+  await fetchEstados(); 
   }
 
   Future<void> fetchGetParticipantes() async {   /////
@@ -39,6 +41,11 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
     jugadores = await JugadorGetServicio.fetchJugador();
     setState(() {});
   }
+
+  Future<void> fetchEstados() async {      /////
+    estados = await EstadoGetServicio.fetchEstado();
+    setState(() {});
+  }  
 
   // Función para filtrar los juegos por nombre para el buscador (search)
   void filterJuegos(String query) {
@@ -90,6 +97,18 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
     return "";
   }
 
+  String estadoJuego() {
+  for (var estado in estados) {
+    for (var juego in juegos) {
+      if (juego['estadoId'] == estado['id']) {
+        return estado['nombre']; // Retorna el nombre del estado si se encuentra una coincidencia
+      }
+    }
+  }
+  return 'Estado no encontrado'; // Retorna un valor predeterminado si no se encuentra ninguna coincidencia
+}
+  
+
 
   @override
   Widget build(BuildContext context) {
@@ -117,8 +136,7 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
             child: TextField(
               controller: _controller,
               onChanged: (value) {
-                filterJuegos(
-                    value); // Filtrar los juegos cada vez que cambia el texto en el campo de búsqueda
+                filterJuegos(value); // Filtrar los juegos cada vez que cambia el texto en el campo de búsqueda
               },
               decoration: InputDecoration(
                 hintText: 'Buscar juegos por nombre...',
@@ -135,12 +153,7 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              DetalleJuegoPage(juego: juegosFiltrados[index]),
-                        ));
+                    Navigator.push(context,MaterialPageRoute(builder: (context) =>DetalleJuegoPage(juego: juegosFiltrados[index]),));
                   },
                   child: Container(
                     margin:
@@ -156,6 +169,7 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Estado: ${juegosFiltrados[index]['estado']}'),
+                          //Text('Estado: ${estadoJuego()}'),
                           Text(
                               'Rondas: ${juegosFiltrados[index]['periodoRonda']}'),
                         ],

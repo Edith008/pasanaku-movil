@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import './servicios.dart';
-import 'ofertar_page.dart';
+//import 'ofertar_page.dart';
 import 'listaPagos_page.dart';
 
 class DetalleJuegoPage extends StatefulWidget {
@@ -14,13 +14,18 @@ class DetalleJuegoPage extends StatefulWidget {
 class _DetalleJuegoPageState extends State<DetalleJuegoPage> {
   List<dynamic> listaParticipantes = [];
   List<dynamic> listaJugadores = [];
+  List<dynamic> atributosJuego = [];   ///
   bool isLoading = true;
+
+  
+  final _formKey = GlobalKey<FormState>();
+  String _monto = '';
+  String _nroRonda = '1' ;
+
 
   @override
   void initState() {
     super.initState();
-    fetchGetParticipantes();
-    fetchJugador();
     cargarDatos();
   }
 
@@ -29,6 +34,7 @@ class _DetalleJuegoPageState extends State<DetalleJuegoPage> {
     await fetchJugador(); 
     setState(() {
       isLoading = false;
+      this.atributosJuego = List.from(widget.juego.keys);
     });
   }
 
@@ -44,6 +50,63 @@ class _DetalleJuegoPageState extends State<DetalleJuegoPage> {
     setState(() {});
     // print('Jugadores cargados: $listaJugadores');
   }
+
+  void showDialogOfertar(){
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Center( child: Text('Ofertar'),),
+        content: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text('Esta oferta es para ronda Nro. $_nroRonda'),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      decoration: InputDecoration(labelText: 'Monto'),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor ingresa el monto';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _monto = value!;
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 10), // Espacio entre los widgets
+                  Text(widget.juego['moneda'].toString()),
+                ],
+              ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
+                print('Monto: $_monto');
+                Navigator.pop(context);
+              }
+            },
+            child: Text('Enviar'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -130,22 +193,42 @@ class _DetalleJuegoPageState extends State<DetalleJuegoPage> {
                                 final participantesEnJuego = listaParticipantes.where((participante) => participante['juegoId'] == widget.juego['id']).toList();
                                 return Container(
                                   height: 600,
-                                  child: ListView.builder(
-                                    itemCount: participantesEnJuego.length,
-                                    itemBuilder: (context, index) {
-                                      final participante = participantesEnJuego[index];
-                                      final jugador = listaJugadores.firstWhere((jug) => jug['id'] == participante['jugadorId'], orElse: () => null);
-                                      final nombreJugador = jugador != null ? jugador['nombre'] : 'Jugador no encontrado';
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                        color: Color.fromARGB(255, 9, 127, 83), // Puedes cambiar el color del contenedor del título aquí
+                                        width: double.infinity, // Esto hará que el contenedor se expanda para llenar el ancho disponible
+                                        child: Text(
+                                          'Participantes:',
+                                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                                          textAlign: TextAlign.center, // Esto centrará el texto dentro del contenedor
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: ListView.builder(
+                                          itemCount: participantesEnJuego.length,
+                                          itemBuilder: (context, index) {
+                                            final participante = participantesEnJuego[index];
+                                            final jugador = listaJugadores.firstWhere((jug) => jug['id'] == participante['jugadorId'], orElse: () => null);
+                                            final nombreJugador = jugador != null ? jugador['nombre'] : 'Jugador no encontrado';
+                                            final numeroParticipante = index + 1;
 
-                                      return ListTile(
-                                        title: Text(nombreJugador),
-                                      );
-                                    },
+                                            return Container(
+                                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                                              child: Text('$numeroParticipante. $nombreJugador'),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 );
                               },
                             );
                           },
+
+
                           style: ElevatedButton.styleFrom(
                             primary: Colors.green,
                             shape: RoundedRectangleBorder(
@@ -160,7 +243,8 @@ class _DetalleJuegoPageState extends State<DetalleJuegoPage> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (_)=>OfertarPage())); 
+                            //Navigator.push(context, MaterialPageRoute(builder: (_)=>OfertarPage())); 
+                            showDialogOfertar();
                           },
                           style: ElevatedButton.styleFrom(
                             primary: Colors.green.shade700, 
@@ -177,7 +261,7 @@ class _DetalleJuegoPageState extends State<DetalleJuegoPage> {
                   SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_)=>ListaPagosPage())); 
+                      Navigator.push(context, MaterialPageRoute(builder: (_)=>ListaPagosPage(juego: widget.juego))); 
                     },
                     style: ElevatedButton.styleFrom(
                       primary: Color.fromARGB(255, 47, 22, 159), 

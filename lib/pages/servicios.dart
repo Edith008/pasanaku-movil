@@ -3,9 +3,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ServicioBase {
-  static const String baseUrl = 'http://127.0.0.1:4000';                    //para chrome
-  //static const String baseUrl = 'http://10.0.2.2:4000';                     //para  emulador          
+  //static const String baseUrl = 'http://127.0.0.1:4000';                    //para chrome
+  static const String baseUrl = 'http://10.0.2.2:4000';                     //para  emulador          
   //static const String baseUrl = 'https://0318-181-41-149-56.ngrok-free.app';  //para movil fisico
+  //static const String baseUrl = 'http://192.168.0.9:4000';  
 }
 
 var myEmail = '';
@@ -39,7 +40,7 @@ class InvitacionServicio {   //para listado de notificaciones
   }
 }
 
-//crear usuario----------------------------------------------------------------
+//Registar usuario----------------------------------------------------------------
 class RegistroUsuarioServicio {   //para registro de usuario y jugador
   Future<void> registrarUsuario(String email, String nombre, String telefono, String contrasena) async {
     try {
@@ -69,6 +70,7 @@ class RegistroUsuarioServicio {   //para registro de usuario y jugador
 class AuthUsuarioServicio {
   Future<Map<String, dynamic>> authUsuario(String email, String contrasena) async {
     try {
+      //usar url de la api para dispositivos android fisico
       var url = Uri.parse('${ServicioBase.baseUrl}/auth/login');  
       var response = await http.post(
         url,
@@ -102,7 +104,7 @@ class AuthUsuarioServicio {
   }
 }
 
-//obtener participantes----------------------------------------------------------------NO
+//obtener participantes----------------------------------------------------------------
 class ParticipantesGetServicio {  
   static Future<List<dynamic>> fetchGetParticipante() async {
     final response = await http.get(Uri.parse('${ServicioBase.baseUrl}/participantes')); 
@@ -115,7 +117,7 @@ class ParticipantesGetServicio {
   }
 }
 
-//obtener jugador--------------------------------------------------------------------NO
+//obtener jugador--------------------------------------------------------------------
 class JugadorGetServicio {  
   static Future<List<dynamic>> fetchJugador() async {
     final response = await http.get(Uri.parse('${ServicioBase.baseUrl}/jugadores')); 
@@ -128,7 +130,7 @@ class JugadorGetServicio {
   }
 }
 
-// ? crear participante----------------------------------------------------------------
+// crear participante----------------------------------------------------------------
 class AceptarInvitacionServicio {
   Future<void> aceptarInvitacion(int jugadorId, int juegoId, int estadoId, int rolId) async {
     try { 
@@ -152,6 +154,19 @@ class AceptarInvitacionServicio {
       }
     } catch (e) {
       print('Error: $e');
+    }
+  }
+}
+
+//obtener estados----------------------------------------------------------------
+class EstadoGetServicio {  
+  static Future<List<dynamic>> fetchEstado() async {
+    final response = await http.get(Uri.parse('${ServicioBase.baseUrl}/estados')); 
+    if (response.statusCode == 200) {
+      debugPrint("se cargaron los estados correctamente");
+      return json.decode(response.body);
+    } else {
+      throw Exception('No se pudo cargar los estados');
     }
   }
 }
