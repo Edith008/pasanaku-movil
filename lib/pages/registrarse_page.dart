@@ -147,6 +147,7 @@ class _RegistrarsePageState extends State<RegistrarsePage> {
                               ),
                               contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15), 
                             ),
+                            keyboardType: TextInputType.number,
                           ),
                           Text(_errorTelefono,style: TextStyle(color: Colors.red)),
                           //SizedBox(height: 10), 

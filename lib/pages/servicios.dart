@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ServicioBase {
-  //static const String baseUrl = 'http://127.0.0.1:4000';                    //para chrome
-  static const String baseUrl = 'http://10.0.2.2:4000';                     //para  emulador          
+  static const String baseUrl = 'http://127.0.0.1:4000';                    //para chrome
+  //static const String baseUrl = 'http://10.0.2.2:4000';                     //para  emulador          
   //static const String baseUrl = 'https://0318-181-41-149-56.ngrok-free.app';  //para movil fisico
   //static const String baseUrl = 'http://192.168.0.9:4000';  
 }
@@ -123,6 +123,7 @@ class JugadorGetServicio {
     final response = await http.get(Uri.parse('${ServicioBase.baseUrl}/jugadores')); 
     if (response.statusCode == 200) {
       //debugPrint("se cargaron los jugadores correctamente");
+      //print(response.body);                    // Imprimir en consola
       return json.decode(response.body);
     } else {
       throw Exception('No se pudo cargar los jugadores');
@@ -163,12 +164,29 @@ class EstadoGetServicio {
   static Future<List<dynamic>> fetchEstado() async {
     final response = await http.get(Uri.parse('${ServicioBase.baseUrl}/estados')); 
     if (response.statusCode == 200) {
-      debugPrint("se cargaron los estados correctamente");
+      //debugPrint("se cargaron los estados correctamente");
+      //print(response.body);                    // Imprimir en consola
       return json.decode(response.body);
     } else {
       throw Exception('No se pudo cargar los estados');
     }
   }
 }
+
+//obtener rondas----------------------------------------------------------------
+//no hay rondas
+class RondaGetServicio {  
+  static Future<List<dynamic>> fetchRonda() async {
+    final response = await http.get(Uri.parse('${ServicioBase.baseUrl}/rondas')); 
+    if (response.statusCode == 200) {
+      debugPrint("se cargaron las rondas correctamente");
+      print(response.body);                    // Imprimir en consola
+      return json.decode(response.body);
+    } else {
+      throw Exception('No se pudo cargar las rondas');
+    }
+  }
+}
+
 
 

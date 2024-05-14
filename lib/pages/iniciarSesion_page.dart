@@ -236,6 +236,9 @@ class _IniciarsesionPageState extends State<IniciarsesionPage> {
           //print('Token JWT: ${data['accessToken']}');  // Imprime el token por consola
           Navigator.push(context, MaterialPageRoute(builder: (_) => ListadoJuegosPage()));
         } else {
+          setState(() {
+          _errorContrasena = 'Contraseña incorrecta';
+        });
           print('No se recibió el token de autenticación');
           print(data['error']);
         }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "173643567251",
+    "project_id": "topicos-c8e65",
+    "storage_bucket": "topicos-c8e65.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173643567251:android:b6e49d7d83a5e2cd487d66",
+        "android_client_info": {
+          "package_name": "com.example.pasanaku_movil"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxeRJqavYXDqSFRJnZH9N_Qf-8ZUR-vLs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

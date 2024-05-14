@@ -234,7 +234,7 @@ void _showDialog(String text) {
                                                 _extractQRData();
                                               },
                                               style: ElevatedButton.styleFrom(
-                                                primary: Color.fromARGB(255, 72, 68, 144), 
+                                                primary: Color.fromARGB(255, 47, 22, 159),
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius: BorderRadius.circular(10),
                                                 ),

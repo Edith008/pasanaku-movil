@@ -96,7 +96,15 @@ class _DetalleJuegoPageState extends State<DetalleJuegoPage> {
                 Navigator.pop(context);
               }
             },
-            child: Text('Enviar'),
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Color.fromARGB(255, 47, 22, 159), ),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0), 
+                ),
+              ),
+            ),
+              child: Text('Enviar', style: TextStyle(color: Colors.white)),
           ),
         ],
       );

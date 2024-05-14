@@ -16,13 +16,11 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
   List<dynamic> estados = [];      /////
   TextEditingController _controller = TextEditingController();
 
-  //bool esUsuarioActual = false ; 
 
   @override
   void initState() {
     super.initState();
     cargarDatos();
-    //esUsuarioActual = usuarioactual();
   }
 
   Future<void> cargarDatos() async {
@@ -34,6 +32,7 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
 
   Future<void> fetchGetParticipantes() async {   /////
     participantes = await ParticipantesGetServicio.fetchGetParticipante();
+    //print('Participantes cargados: $participantes');
     setState(() {});
   }
 
@@ -81,7 +80,6 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
        }
       } 
     }  
-    
     setState(() {
     this.juegos = filteredGames; 
     this.juegosFiltrados = List.from(filteredGames);
@@ -97,16 +95,14 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
     return "";
   }
 
-  String estadoJuego() {
-  for (var estado in estados) {
-    for (var juego in juegos) {
+  String estadoJuego(dynamic juego) {
+    for (var estado in estados) {
       if (juego['estadoId'] == estado['id']) {
-        return estado['nombre']; // Retorna el nombre del estado si se encuentra una coincidencia
+        return estado['nombre']; 
       }
     }
+    return 'Estado no encontrado'; 
   }
-  return 'Estado no encontrado'; // Retorna un valor predeterminado si no se encuentra ninguna coincidencia
-}
   
 
 
@@ -153,7 +149,35 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(context,MaterialPageRoute(builder: (context) =>DetalleJuegoPage(juego: juegosFiltrados[index]),));
+                    String estadoActual = estadoJuego(juegosFiltrados[index]);
+                    
+                    // Verificar si el estado es "Inicializado" o "Finalizado"
+                    if (estadoActual == "Inicializado" || estadoActual == "Finalizado") {
+                      // Solo realizar la navegación si el estado es "Inicializado" o "Finalizado"
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetalleJuegoPage(juego: juegosFiltrados[index],),
+                        ),
+                      );
+                    } else {
+                      SizedBox(height: 10.0);
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                          //title: Text("El juego todavia no ha iniciado"),
+                            content: Text("El Juego todavia no ha Iniciado."),
+                            actions: [
+                              TextButton(
+                                onPressed: () {Navigator.of(context).pop(); },
+                                child: Text("Cerrar"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
                   },
                   child: Container(
                     margin:
@@ -168,10 +192,8 @@ class _ListadoJuegosPageState extends State<ListadoJuegosPage> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Estado: ${juegosFiltrados[index]['estado']}'),
-                          //Text('Estado: ${estadoJuego()}'),
-                          Text(
-                              'Rondas: ${juegosFiltrados[index]['periodoRonda']}'),
+                          Text('Estado: ${estadoJuego(juegosFiltrados[index])}'),
+                          Text('Rondas: ${juegosFiltrados[index]['periodoRonda']}'),
                         ],
                       ),
                       leading: CircleAvatar(
